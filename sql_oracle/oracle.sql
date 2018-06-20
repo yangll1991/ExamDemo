@@ -1,0 +1,30 @@
+
+Select count(distinct c.msisdn) from (select a.msisdn,sum(a.pv) pv_sum 
+from PAGEVISIT a where a.record_day between ¡®20171001¡¯ and ¡®20171007¡¯ group by a.msisdn) c 
+left join (select msisdn,sex from USER_INFO group by msisdn,sex) b on c.msisdn=b.msisdn where b.sex=¡¯ÄÐ¡¯ and c.pv_sum>100;
+
+
+select distinct A.MSISDN from PAGEVISIT A, PAGEVISIT B, PAGEVISIT C
+where A.RECORD_DAY=B.RECORD_DAY + 1 
+AND B.RECORD_DAY=C.RECORD_DAY+1
+          AND A. RECORD_DAY BETWEEN '20171001'  AND  '20171007'
+          AND A.PV>0
+          AND A.MSISDN = B.MSISDN
+          AND B.MSISDN = C.MSISDN;
+
+		  
+SELECT DEPT_NAME,NAME,SALARY FROM 
+(SELECT A.NAME,A.SALARY,a.DEPARTMENTID,DENSE_RANK() OVER(PARTITION BY DEPARTMENTID ORDER BY SALARY DESC) AS RN  FROM EMPLOYEE A) A 
+LEFT JOIN DEPARTMENT B ON A.DEPARTMENTID=B.DEPARTMENTID WHERE RN
+<=3;
+
+
+SELECT T.REQUEST_AT DAY,ROUND(SUM((CASE WHEN T.STATUS LIKE 'cancelled%' THEN 1 ELSE 0 END))/COUNT(*),2) AS CANCELLATION_RATE
+FROM (
+SELECT *
+FROM TRIPS A inner JOIN USERS B ON B.user_id =A.CLIENT_ID AND trim(B.Banned) = 'No'   
+WHERE A.REQUEST_AT BETWEEN '2013-10-01' AND '2013-10-03'
+union all
+SELECT *
+FROM TRIPS A inner JOIN USERS B ON B.user_id =A.DRIVER_ID AND trim(B.Banned) = 'No'   
+WHERE A.REQUEST_AT BETWEEN '2013-10-01' AND '2013-10-03') t GROUP BY T.REQUEST_AT;
